@@ -1,6 +1,7 @@
 # Miscellaneous
 *.class
 *.lock
+!pubspec.lock
 *.log
 *.pyc
 *.swp
@@ -106,6 +107,11 @@ unlinked_spec.ds
 
 # Coverage
 coverage/
+
+# Generator local outputs
+generators/node_modules/
+generators/dist/
+generators/.vite/
 
 # Symbols
 app.*.symbols
