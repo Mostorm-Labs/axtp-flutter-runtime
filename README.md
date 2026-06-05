@@ -76,9 +76,22 @@ scripts/upgrade-axtp-spec.sh spec/v0.3.0
 scripts/check-axtp-spec-lock.sh
 ```
 
-After upgrading, run generator checks, Dart tests, smoke checks, and conformance
-tests before merging. TODO: no dedicated Flutter runtime conformance test script
-exists yet.
+After upgrading, run generator checks, Dart tests, smoke checks, and the
+conformance runner before merging.
+
+## Conformance
+
+Conformance cases are owned by the AXTP spec repository. Point the runner at the
+locked spec checkout and run:
+
+```bash
+AXTP_SPEC_PATH=/path/to/axtp scripts/run-conformance.sh
+```
+
+The runner writes `conformance-results/result.json`. Required failures exit
+nonzero. Optional cases are reported as skipped or passed unless
+`CONFORMANCE_STRICT_OPTIONAL=true`; upgrade PR workflows may temporarily use
+`CONFORMANCE_ALLOW_INCOMPLETE=true`.
 
 ## Automated AXTP Spec Upgrade
 
