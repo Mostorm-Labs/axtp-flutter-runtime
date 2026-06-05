@@ -59,6 +59,10 @@ dart test
 dart run tool/smoke.dart
 ```
 
+## Documentation
+
+- [Flutter runtime patterns](docs/AXTP_FLUTTER_RUNTIME_PATTERNS.md)
+
 ## Spec Lock Checks
 
 ```bash

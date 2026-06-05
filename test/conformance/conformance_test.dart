@@ -390,7 +390,9 @@ String? resolveSpecPath() {
     'third_party/axtp-spec',
     '.axtp-spec',
   ]) {
-    if (path != null && File('$path/conformance/manifest.yaml').existsSync()) {
+    if (path != null &&
+        (File('$path/docs/conformance/manifest.yaml').existsSync() ||
+            File('$path/conformance/manifest.yaml').existsSync())) {
       return path;
     }
   }
