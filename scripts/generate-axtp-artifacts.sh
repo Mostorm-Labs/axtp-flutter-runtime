@@ -33,3 +33,5 @@ const outDir = path.join(root, "lib/src/generated");
 await emitDartFiles(spec, outDir);
 console.log(`[OK] generated Dart artifacts: ${outDir}`);
 NODE
+
+AXTP_SPEC_PATH="$spec" node "$root/scripts/axtp-versioning.mjs" generate --runtime-name axtp-flutter-runtime
