@@ -65,6 +65,21 @@ dart run tool/smoke.dart
 scripts/check-axtp-spec-lock.sh
 ```
 
+## AXTP Spec Upgrade
+
+This runtime follows AXTP Spec via `AXTP_SPEC.lock.yaml`.
+
+To upgrade:
+
+```bash
+scripts/upgrade-axtp-spec.sh spec/v0.3.0
+scripts/check-axtp-spec-lock.sh
+```
+
+After upgrading, run generator checks, Dart tests, smoke checks, and conformance
+tests before merging. TODO: no dedicated Flutter runtime conformance test script
+exists yet.
+
 ## Local Generator
 
 This repository maintains its own generator under `generators/`.
