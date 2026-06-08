@@ -49,11 +49,9 @@ enum ControlOpcode {
 
 enum RpcEncoding {
   json(0x01),
-  tlv(0x02),
-  binary(0x03),
-  raw(0x04),
-  cbor(0x05),
-  msgpack(0x06);
+  cbor(0x02),
+  msgpack(0x03),
+  jsonBinary(0x04);
 
   const RpcEncoding(this.value);
 
@@ -70,9 +68,7 @@ enum RpcEncoding {
 enum RpcBodyEncoding {
   noneValue(0x00),
   tlv8(0x01),
-  tlv16(0x02),
-  rawBytes(0x03),
-  cborBody(0x04);
+  tlv16(0x02);
 
   const RpcBodyEncoding(this.value);
 
