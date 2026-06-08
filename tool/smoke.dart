@@ -27,11 +27,11 @@ Future<void> main() async {
   final body = List<int>.generate(40, (index) => index);
   OutboundProcessor(chunks.add, maxFrameSize: 24).sendRpcRequest(
     RpcPayload(
-      encoding: RpcEncoding.tlv,
+      encoding: rpcEncodingJsonBinary,
       op: RpcOp.request,
       requestId: 43,
       methodOrEventId: 0x0101,
-      bodyEncoding: RpcBodyEncoding.rawBytes,
+      bodyEncoding: RpcBodyEncoding.tlv8,
       body: body,
     ),
   );
@@ -52,7 +52,7 @@ Future<void> main() async {
   final requestChunks = <Bytes>[];
   OutboundProcessor(requestChunks.add).sendRpcRequest(
     RpcPayload(
-      encoding: RpcEncoding.tlv,
+      encoding: rpcEncodingJsonBinary,
       op: RpcOp.request,
       requestId: 900,
       methodOrEventId: 0x0901,
