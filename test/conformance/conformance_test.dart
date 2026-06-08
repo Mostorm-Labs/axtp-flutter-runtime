@@ -237,7 +237,7 @@ bool testRequestResponseJson() {
       op: RpcOp.request,
       requestId: 1,
       methodOrEventId: MethodId.audioGetAlgorithmConfig.value,
-      bodyEncoding: RpcBodyEncoding.rawBytes,
+      bodyEncoding: RpcBodyEncoding.noneValue,
       body: utf8.encode('{}'),
     ),
     configureBroker: (broker) {
@@ -266,7 +266,7 @@ bool testMethodNotFoundWithId(int requestId) {
       op: RpcOp.request,
       requestId: requestId,
       methodOrEventId: 0x7fff,
-      bodyEncoding: RpcBodyEncoding.rawBytes,
+      bodyEncoding: RpcBodyEncoding.noneValue,
       body: utf8.encode('{}'),
     ),
   );
@@ -285,7 +285,7 @@ bool testEventEmit() {
       encoding: RpcEncoding.json,
       op: RpcOp.event,
       methodOrEventId: EventId.audioAlgorithmConfigChanged.value,
-      bodyEncoding: RpcBodyEncoding.rawBytes,
+      bodyEncoding: RpcBodyEncoding.noneValue,
       meta: const PayloadMeta(
         sourceProtocol: SourceProtocol.jsonRpc,
         jsonSid: 's1',

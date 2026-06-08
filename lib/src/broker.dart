@@ -247,7 +247,7 @@ class BusinessRouter {
   void registerTlvMethodById(int methodId, TlvRpcHandler handler) {
     registerRawMethod(methodId, (context, request) {
       return RpcResponseData(
-        encoding: RpcEncoding.tlv,
+        encoding: rpcEncodingJsonBinary,
         body: handler(context, request.body),
         overrideEncoding: true,
       );
@@ -298,10 +298,7 @@ class BusinessRouter {
   }
 
   RpcBodyEncoding _bodyEncodingFor(RpcEncoding encoding) {
-    if (encoding == RpcEncoding.tlv || encoding == RpcEncoding.binary) {
-      return RpcBodyEncoding.tlv8;
-    }
-    return RpcBodyEncoding.rawBytes;
+    return bodyEncodingForRpcEncoding(encoding);
   }
 }
 

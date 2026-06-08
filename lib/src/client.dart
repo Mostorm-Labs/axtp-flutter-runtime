@@ -201,7 +201,7 @@ class AxtpClient {
     return callTlvById(
       methodId,
       tlvBody,
-      options: options.copyWith(encoding: RpcEncoding.tlv),
+      options: options.copyWith(encoding: rpcEncodingJsonBinary),
     );
   }
 
@@ -212,9 +212,9 @@ class AxtpClient {
   }) {
     return callRawById(
       methodId,
-      RpcEncoding.tlv,
+      rpcEncodingJsonBinary,
       tlvBody,
-      options: options.copyWith(encoding: RpcEncoding.tlv),
+      options: options.copyWith(encoding: rpcEncodingJsonBinary),
     );
   }
 
@@ -225,9 +225,9 @@ class AxtpClient {
   }) {
     return callRawById(
       methodId,
-      RpcEncoding.raw,
+      rpcEncodingJsonBinary,
       body,
-      options: options.copyWith(encoding: RpcEncoding.raw),
+      options: options.copyWith(encoding: rpcEncodingJsonBinary),
     );
   }
 
@@ -257,8 +257,7 @@ class AxtpClient {
         request.requestId == 0 ? _takeRequestId() : request.requestId;
     var bodyEncoding = request.bodyEncoding;
     if (bodyEncoding == RpcBodyEncoding.tlv8 &&
-        request.encoding != RpcEncoding.tlv &&
-        request.encoding != RpcEncoding.binary) {
+        !isJsonBinaryRpcEncoding(request.encoding)) {
       bodyEncoding = _bodyEncodingFor(request.encoding);
     }
     return request.copyWith(
@@ -277,10 +276,7 @@ class AxtpClient {
   }
 
   RpcBodyEncoding _bodyEncodingFor(RpcEncoding encoding) {
-    if (encoding == RpcEncoding.tlv || encoding == RpcEncoding.binary) {
-      return RpcBodyEncoding.tlv8;
-    }
-    return RpcBodyEncoding.rawBytes;
+    return bodyEncodingForRpcEncoding(encoding);
   }
 
   RpcPayload _makeErrorResponse(RpcPayload request, ErrorCode code) {

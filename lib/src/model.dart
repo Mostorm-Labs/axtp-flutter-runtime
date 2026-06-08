@@ -14,11 +14,24 @@ enum TransportKind { tcp, webSocket, hid, ble, uart, mock, custom }
 
 enum AxtpWireMode { framedBinary, webSocketJsonRpc }
 
+const int kRpcEncodingJsonBinaryValue = 0x04;
+
+RpcEncoding get rpcEncodingJsonBinary =>
+    RpcEncoding.fromValue(kRpcEncodingJsonBinaryValue)!;
+
+bool isJsonBinaryRpcEncoding(RpcEncoding encoding) =>
+    encoding.value == kRpcEncodingJsonBinaryValue;
+
+RpcBodyEncoding bodyEncodingForRpcEncoding(RpcEncoding encoding) =>
+    isJsonBinaryRpcEncoding(encoding)
+        ? RpcBodyEncoding.tlv8
+        : RpcBodyEncoding.noneValue;
+
 class TransportProfile {
   const TransportProfile({
     this.kind = TransportKind.custom,
     this.wireMode = AxtpWireMode.framedBinary,
-    this.defaultRpcEncoding = RpcEncoding.tlv,
+    this.defaultRpcEncoding = RpcEncoding.json,
     this.messageOriented = false,
     this.supportsTextMessage = false,
     this.supportsBinaryMessage = true,
@@ -106,7 +119,7 @@ class RpcPayload {
     this.requestId = 0,
     this.methodOrEventId = 0,
     this.statusCode = ErrorCode.success,
-    this.bodyEncoding = RpcBodyEncoding.tlv8,
+    this.bodyEncoding = RpcBodyEncoding.noneValue,
     this.meta = const PayloadMeta(),
     Iterable<int>? body,
   }) : body = bytesFrom(body);

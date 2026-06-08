@@ -15,7 +15,8 @@ P0 supports:
 - FramedBinary payload encode/decode with frame fragmentation and CRC16.
 - WebSocketJsonRpc complete-text-message encode/decode.
 - `AxtpCore`, `BasicBroker`, `AxtpEndpoint`, `MockTransport`.
-- Dynamic JSON, TLV, and raw RPC calls through `AxtpClient`.
+- Dynamic JSON and byte-oriented RPC calls through `AxtpClient`, with
+  JSON_BINARY represented by the AXTP spec value `0x04`.
 - Generated registry lookup from the AXTP generator.
 
 ## AXTP Spec Compatibility

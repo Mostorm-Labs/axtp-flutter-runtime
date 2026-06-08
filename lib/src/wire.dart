@@ -662,7 +662,7 @@ class JsonRpcDecoder implements ByteSink {
           op: RpcOp.requestResponse,
           requestId: requestId,
           statusCode: ErrorCode.rpcMethodNotFound,
-          bodyEncoding: RpcBodyEncoding.rawBytes,
+          bodyEncoding: RpcBodyEncoding.noneValue,
           meta: PayloadMeta(
             sourceProtocol: SourceProtocol.jsonRpc,
             jsonSid: _parseSid(object),
@@ -679,7 +679,7 @@ class JsonRpcDecoder implements ByteSink {
         op: RpcOp.request,
         requestId: requestId,
         methodOrEventId: methodId,
-        bodyEncoding: RpcBodyEncoding.rawBytes,
+        bodyEncoding: RpcBodyEncoding.noneValue,
         meta: PayloadMeta(
           sourceProtocol: SourceProtocol.jsonRpc,
           requestId: requestId,
@@ -704,7 +704,7 @@ class JsonRpcDecoder implements ByteSink {
         encoding: RpcEncoding.json,
         op: RpcOp.event,
         methodOrEventId: eventId,
-        bodyEncoding: RpcBodyEncoding.rawBytes,
+        bodyEncoding: RpcBodyEncoding.noneValue,
         meta: PayloadMeta(
           sourceProtocol: SourceProtocol.jsonRpc,
           jsonSid: _parseSid(object),
@@ -724,7 +724,7 @@ class JsonRpcDecoder implements ByteSink {
       RpcPayload(
         encoding: RpcEncoding.json,
         op: op,
-        bodyEncoding: RpcBodyEncoding.rawBytes,
+        bodyEncoding: RpcBodyEncoding.noneValue,
         meta: PayloadMeta(
           sourceProtocol: SourceProtocol.jsonRpc,
           jsonSid: _parseSid(object),
@@ -742,7 +742,7 @@ class JsonRpcDecoder implements ByteSink {
         op: RpcOp.requestBatchResponse,
         requestId: requestId,
         statusCode: ErrorCode.rpcBatchUnsupported,
-        bodyEncoding: RpcBodyEncoding.rawBytes,
+        bodyEncoding: RpcBodyEncoding.noneValue,
         meta: PayloadMeta(
           sourceProtocol: SourceProtocol.jsonRpc,
           requestId: requestId,

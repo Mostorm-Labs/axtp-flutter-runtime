@@ -30,11 +30,11 @@ void main() {
     final body = List<int>.generate(40, (index) => index);
     outbound.sendRpcRequest(
       RpcPayload(
-        encoding: RpcEncoding.tlv,
+        encoding: rpcEncodingJsonBinary,
         op: RpcOp.request,
         requestId: 43,
         methodOrEventId: 0x0101,
-        bodyEncoding: RpcBodyEncoding.rawBytes,
+        bodyEncoding: RpcBodyEncoding.tlv8,
         body: body,
       ),
     );
@@ -62,7 +62,7 @@ void main() {
     final requestChunks = <Bytes>[];
     OutboundProcessor(requestChunks.add).sendRpcRequest(
       RpcPayload(
-        encoding: RpcEncoding.tlv,
+        encoding: rpcEncodingJsonBinary,
         op: RpcOp.request,
         requestId: 900,
         methodOrEventId: 0x0901,
