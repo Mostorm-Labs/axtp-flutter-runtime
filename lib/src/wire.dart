@@ -40,18 +40,18 @@ class ByteWriter {
   }
 
   void writeU16(int value) {
-    _bytes.add(value & 0xff);
     _bytes.add((value >> 8) & 0xff);
+    _bytes.add(value & 0xff);
   }
 
   void writeU32(int value) {
-    for (var shift = 0; shift < 32; shift += 8) {
+    for (var shift = 24; shift >= 0; shift -= 8) {
       _bytes.add((value >> shift) & 0xff);
     }
   }
 
   void writeU64(int value) {
-    for (var shift = 0; shift < 64; shift += 8) {
+    for (var shift = 56; shift >= 0; shift -= 8) {
       _bytes.add((value >> shift) & 0xff);
     }
   }
@@ -83,7 +83,7 @@ class ByteReader {
   int? readU16() {
     if (remaining < 2) return null;
     final value =
-        (_bytes[_offset] & 0xff) | ((_bytes[_offset + 1] & 0xff) << 8);
+        ((_bytes[_offset] & 0xff) << 8) | (_bytes[_offset + 1] & 0xff);
     _offset += 2;
     return value;
   }
@@ -91,7 +91,7 @@ class ByteReader {
   int? readU32() {
     if (remaining < 4) return null;
     var value = 0;
-    for (var shift = 0; shift < 32; shift += 8) {
+    for (var shift = 24; shift >= 0; shift -= 8) {
       value |= (_bytes[_offset++] & 0xff) << shift;
     }
     return value;
@@ -100,7 +100,7 @@ class ByteReader {
   int? readU64() {
     if (remaining < 8) return null;
     var value = 0;
-    for (var shift = 0; shift < 64; shift += 8) {
+    for (var shift = 56; shift >= 0; shift -= 8) {
       value |= (_bytes[_offset++] & 0xff) << shift;
     }
     return value;

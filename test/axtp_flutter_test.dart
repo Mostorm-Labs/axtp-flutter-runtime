@@ -14,6 +14,42 @@ bool bytesEqual(Iterable<int> left, Iterable<int> right) {
 }
 
 void main() {
+  test('wire integer IO uses network byte order', () {
+    final writer = ByteWriter()
+      ..writeU8(0x12)
+      ..writeU16(0x3456)
+      ..writeU32(0x789abcde)
+      ..writeU64(0x1122334455667788);
+
+    expect(
+      writer.bytes,
+      <int>[
+        0x12,
+        0x34,
+        0x56,
+        0x78,
+        0x9a,
+        0xbc,
+        0xde,
+        0x11,
+        0x22,
+        0x33,
+        0x44,
+        0x55,
+        0x66,
+        0x77,
+        0x88,
+      ],
+    );
+
+    final reader = ByteReader(writer.bytes);
+    expect(reader.readU8(), 0x12);
+    expect(reader.readU16(), 0x3456);
+    expect(reader.readU32(), 0x789abcde);
+    expect(reader.readU64(), 0x1122334455667788);
+    expect(reader.remaining, 0);
+  });
+
   test('generated registry lookup mirrors protocol facts', () {
     final methodId = RegistryLookup.methodIdByName('audio.getAlgorithmConfig');
     expect(methodId, MethodId.audioGetAlgorithmConfig.value);

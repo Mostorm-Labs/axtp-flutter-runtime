@@ -22,7 +22,7 @@ AxtpTransport <-> AxtpEndpoint -> AxtpCore -> BasicBroker
 
 ## P0 能力
 
-- FramedBinary：12B standard frame header、little-endian fields、CRC16-CCITT-FALSE、message fragmentation/reassembly。
+- FramedBinary：12B standard frame header、Big-Endian / network byte order fields、CRC16-CCITT-FALSE、message fragmentation/reassembly。
 - WebSocketJsonRpc：每次 `onBytes()` 输入一条完整 UTF-8 text message，支持 `sid/op/d` request/event/response。
 - Dynamic RPC first：`callJson`、`callTlv`、`callRawBytes` 和 broker raw/json/tlv handler。
 - Mock transport：用于 Flutter 单元测试、demo 和本地业务 handler 验证。
