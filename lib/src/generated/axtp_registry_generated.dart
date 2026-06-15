@@ -110,10 +110,44 @@ enum RpcOp {
 }
 
 enum MethodId {
+  deviceGetInfo(0x0101),
+  firmwareGetUpdateCapabilities(0x0401),
+  firmwareBeginUpdate(0x0402),
+  firmwareGetUpdateState(0x0408),
+  firmwareFinishUpdate(0x040B),
+  videoOpenStream(0x080B),
+  videoCloseStream(0x080C),
+  videoGetStreamState(0x080D),
+  videoGetStreamCapabilities(0x0812),
+  videoGetStreamSourceState(0x0813),
+  videoRequestKeyFrame(0x0814),
   audioGetAlgorithmConfig(0x0901),
   audioSetAlgorithmConfig(0x0902),
   audioGetAlgorithmCapabilities(0x090D),
-  audioResetAlgorithmConfig(0x090E);
+  audioResetAlgorithmConfig(0x090E),
+  audioGetStreamCapabilities(0x090F),
+  audioOpenStream(0x0910),
+  audioCloseStream(0x0911),
+  audioGetStreamState(0x0912),
+  audioGetStreamSourceState(0x0913),
+  networkGetIpConfig(0x0E02),
+  networkSetIpConfig(0x0E03),
+  networkGetWifiConfig(0x0E04),
+  networkSetWifiConfig(0x0E05),
+  networkScanWifi(0x0E06),
+  networkConnectWifi(0x0E07),
+  networkDisconnectWifi(0x0E08),
+  networkGetWifiState(0x0E09),
+  networkGetApConfig(0x0E0A),
+  networkSetApConfig(0x0E0B),
+  networkStartAp(0x0E0C),
+  networkStopAp(0x0E0D),
+  networkGetApState(0x0E0E),
+  networkGetInterfaces(0x0E10),
+  networkGetInterfaceInfo(0x0E11),
+  networkGetWifiCapabilities(0x0E12),
+  networkGetApCapabilities(0x0E13),
+  networkGetApClients(0x0E14);
 
   const MethodId(this.value);
 
@@ -128,7 +162,23 @@ enum MethodId {
 }
 
 enum EventId {
-  audioAlgorithmConfigChanged(0x0901);
+  firmwareUpdateProgressReported(0x0402),
+  firmwareUpdateStateChanged(0x0403),
+  videoStreamStateChanged(0x0806),
+  videoStreamSourceStateChanged(0x0807),
+  videoStreamStatsReported(0x0808),
+  audioAlgorithmConfigChanged(0x0901),
+  audioStreamStateChanged(0x0902),
+  audioStreamSourceStateChanged(0x0903),
+  audioStreamStatsReported(0x0904),
+  networkInterfaceStateChanged(0x0E01),
+  networkIpConfigChanged(0x0E02),
+  networkWifiConfigChanged(0x0E03),
+  networkWifiStateChanged(0x0E04),
+  networkWifiScanResultReported(0x0E05),
+  networkApConfigChanged(0x0E06),
+  networkApStateChanged(0x0E07),
+  networkApClientChanged(0x0E08);
 
   const EventId(this.value);
 
@@ -315,7 +365,15 @@ enum CapabilityId {
   protocolPayloadRpc(0x0002),
   protocolPayloadStream(0x0003),
   protocolReservedRequestIdWidth(0x0009),
-  audioAlgorithm(0x0901);
+  deviceInfo(0x0101),
+  firmwareUpdate(0x0401),
+  videoStream(0x0801),
+  audioAlgorithm(0x0901),
+  audioStream(0x0902),
+  networkInterface(0x0E01),
+  networkIp(0x0E02),
+  networkWifi(0x0E03),
+  networkAp(0x0E04);
 
   const CapabilityId(this.value);
 
@@ -368,14 +426,64 @@ class CapabilityDescriptor {
 }
 
 const kMethodRegistry = <MethodDescriptor>[
+  MethodDescriptor(0x0101, "device.getInfo", "device", "GetDeviceInfoParams", "DeviceInfo"),
+  MethodDescriptor(0x0401, "firmware.getUpdateCapabilities", "firmware", "Empty", "FirmwareUpdateCapabilities"),
+  MethodDescriptor(0x0402, "firmware.beginUpdate", "firmware", "BeginUpdateParams", "BeginUpdateResult"),
+  MethodDescriptor(0x0408, "firmware.getUpdateState", "firmware", "GetUpdateStateParams", "FirmwareUpdateState"),
+  MethodDescriptor(0x040B, "firmware.finishUpdate", "firmware", "FinishUpdateParams", "FinishUpdateResult"),
+  MethodDescriptor(0x080B, "video.openStream", "video", "VideoOpenStreamParams", "VideoOpenStreamResult"),
+  MethodDescriptor(0x080C, "video.closeStream", "video", "VideoCloseStreamParams", "VideoCloseStreamResult"),
+  MethodDescriptor(0x080D, "video.getStreamState", "video", "VideoGetStreamStateParams", "VideoStreamState"),
+  MethodDescriptor(0x0812, "video.getStreamCapabilities", "video", "VideoGetStreamCapabilitiesParams", "VideoStreamCapabilities"),
+  MethodDescriptor(0x0813, "video.getStreamSourceState", "video", "VideoGetStreamSourceStateParams", "VideoStreamSourceState"),
+  MethodDescriptor(0x0814, "video.requestKeyFrame", "video", "VideoRequestKeyFrameParams", "VideoRequestKeyFrameResult"),
   MethodDescriptor(0x0901, "audio.getAlgorithmConfig", "audio", "AudioGetAlgorithmConfigRequest", "AudioAlgorithmConfig"),
   MethodDescriptor(0x0902, "audio.setAlgorithmConfig", "audio", "AudioSetAlgorithmConfigRequest", "AudioSetAlgorithmConfigResponse"),
   MethodDescriptor(0x090D, "audio.getAlgorithmCapabilities", "audio", "AudioGetAlgorithmCapabilitiesRequest", "AudioGetAlgorithmCapabilitiesResponse"),
-  MethodDescriptor(0x090E, "audio.resetAlgorithmConfig", "audio", "AudioResetAlgorithmConfigRequest", "AudioSetAlgorithmConfigResponse")
+  MethodDescriptor(0x090E, "audio.resetAlgorithmConfig", "audio", "AudioResetAlgorithmConfigRequest", "AudioSetAlgorithmConfigResponse"),
+  MethodDescriptor(0x090F, "audio.getStreamCapabilities", "audio", "AudioGetStreamCapabilitiesParams", "AudioStreamCapabilities"),
+  MethodDescriptor(0x0910, "audio.openStream", "audio", "AudioOpenStreamParams", "AudioOpenStreamResult"),
+  MethodDescriptor(0x0911, "audio.closeStream", "audio", "AudioCloseStreamParams", "AudioCloseStreamResult"),
+  MethodDescriptor(0x0912, "audio.getStreamState", "audio", "AudioGetStreamStateParams", "AudioStreamState"),
+  MethodDescriptor(0x0913, "audio.getStreamSourceState", "audio", "AudioGetStreamSourceStateParams", "AudioStreamSourceState"),
+  MethodDescriptor(0x0E02, "network.getIpConfig", "network", "NetworkGetIpConfigParams", "NetworkIpConfig"),
+  MethodDescriptor(0x0E03, "network.setIpConfig", "network", "NetworkSetIpConfigParams", "NetworkSetIpConfigResult"),
+  MethodDescriptor(0x0E04, "network.getWifiConfig", "network", "NetworkGetWifiConfigParams", "NetworkWifiConfig"),
+  MethodDescriptor(0x0E05, "network.setWifiConfig", "network", "NetworkSetWifiConfigParams", "NetworkSetWifiConfigResult"),
+  MethodDescriptor(0x0E06, "network.scanWifi", "network", "NetworkScanWifiParams", "NetworkScanWifiResult"),
+  MethodDescriptor(0x0E07, "network.connectWifi", "network", "NetworkConnectWifiParams", "NetworkWifiActionResult"),
+  MethodDescriptor(0x0E08, "network.disconnectWifi", "network", "NetworkDisconnectWifiParams", "NetworkWifiActionResult"),
+  MethodDescriptor(0x0E09, "network.getWifiState", "network", "NetworkGetWifiStateParams", "NetworkWifiState"),
+  MethodDescriptor(0x0E0A, "network.getApConfig", "network", "NetworkGetApConfigParams", "NetworkApConfig"),
+  MethodDescriptor(0x0E0B, "network.setApConfig", "network", "NetworkSetApConfigParams", "NetworkSetApConfigResult"),
+  MethodDescriptor(0x0E0C, "network.startAp", "network", "NetworkApActionParams", "NetworkApActionResult"),
+  MethodDescriptor(0x0E0D, "network.stopAp", "network", "NetworkApActionParams", "NetworkApActionResult"),
+  MethodDescriptor(0x0E0E, "network.getApState", "network", "NetworkGetApConfigParams", "NetworkApState"),
+  MethodDescriptor(0x0E10, "network.getInterfaces", "network", "NetworkGetInterfacesParams", "NetworkInterfaces"),
+  MethodDescriptor(0x0E11, "network.getInterfaceInfo", "network", "NetworkGetInterfaceInfoParams", "NetworkInterfaceInfo"),
+  MethodDescriptor(0x0E12, "network.getWifiCapabilities", "network", "NetworkGetWifiCapabilitiesParams", "NetworkWifiCapabilities"),
+  MethodDescriptor(0x0E13, "network.getApCapabilities", "network", "NetworkGetApCapabilitiesParams", "NetworkApCapabilities"),
+  MethodDescriptor(0x0E14, "network.getApClients", "network", "NetworkGetApConfigParams", "NetworkApClients")
 ];
 
 const kEventRegistry = <EventDescriptor>[
-  EventDescriptor(0x0901, "audio.algorithmConfigChanged", "audio", "AudioAlgorithmConfigChangedEvent")
+  EventDescriptor(0x0402, "firmware.updateProgressReported", "firmware", "FirmwareUpdateProgressEvent"),
+  EventDescriptor(0x0403, "firmware.updateStateChanged", "firmware", "FirmwareUpdateStateChangedEvent"),
+  EventDescriptor(0x0806, "video.streamStateChanged", "video", "VideoStreamStateChangedEvent"),
+  EventDescriptor(0x0807, "video.streamSourceStateChanged", "video", "VideoStreamSourceStateChangedEvent"),
+  EventDescriptor(0x0808, "video.streamStatsReported", "video", "VideoStreamStatsReportedEvent"),
+  EventDescriptor(0x0901, "audio.algorithmConfigChanged", "audio", "AudioAlgorithmConfigChangedEvent"),
+  EventDescriptor(0x0902, "audio.streamStateChanged", "audio", "AudioStreamStateChangedEvent"),
+  EventDescriptor(0x0903, "audio.streamSourceStateChanged", "audio", "AudioStreamSourceStateChangedEvent"),
+  EventDescriptor(0x0904, "audio.streamStatsReported", "audio", "AudioStreamStatsReportedEvent"),
+  EventDescriptor(0x0E01, "network.interfaceStateChanged", "network", "NetworkInterfaceStateChangedEvent"),
+  EventDescriptor(0x0E02, "network.ipConfigChanged", "network", "NetworkIpConfigChangedEvent"),
+  EventDescriptor(0x0E03, "network.wifiConfigChanged", "network", "NetworkWifiConfigChangedEvent"),
+  EventDescriptor(0x0E04, "network.wifiStateChanged", "network", "NetworkWifiStateChangedEvent"),
+  EventDescriptor(0x0E05, "network.wifiScanResultReported", "network", "NetworkWifiScanResultReportedEvent"),
+  EventDescriptor(0x0E06, "network.apConfigChanged", "network", "NetworkApConfigChangedEvent"),
+  EventDescriptor(0x0E07, "network.apStateChanged", "network", "NetworkApStateChangedEvent"),
+  EventDescriptor(0x0E08, "network.apClientChanged", "network", "NetworkApClientChangedEvent")
 ];
 
 const kErrorRegistry = <ErrorDescriptor>[
@@ -540,7 +648,15 @@ const kCapabilityRegistry = <CapabilityDescriptor>[
   CapabilityDescriptor(0x0002, "protocol.payload.rpc", "protocol", "bool", ""),
   CapabilityDescriptor(0x0003, "protocol.payload.stream", "protocol", "bool", ""),
   CapabilityDescriptor(0x0009, "protocol.reservedRequestIdWidth", "protocol", "reserved", ""),
-  CapabilityDescriptor(0x0901, "audio.algorithm", "audio", "object", "AudioAlgorithmCapability")
+  CapabilityDescriptor(0x0101, "device.info", "device", "object", "DeviceInfoCapability"),
+  CapabilityDescriptor(0x0401, "firmware.update", "firmware", "object", "FirmwareUpdateCapabilities"),
+  CapabilityDescriptor(0x0801, "video.stream", "video", "object", "VideoStreamCapabilities"),
+  CapabilityDescriptor(0x0901, "audio.algorithm", "audio", "object", "AudioAlgorithmCapability"),
+  CapabilityDescriptor(0x0902, "audio.stream", "audio", "object", "AudioStreamCapabilities"),
+  CapabilityDescriptor(0x0E01, "network.interface", "network", "object", "NetworkInterfaceCapability"),
+  CapabilityDescriptor(0x0E02, "network.ip", "network", "object", "NetworkIpCapability"),
+  CapabilityDescriptor(0x0E03, "network.wifi", "network", "object", "NetworkWifiCapabilities"),
+  CapabilityDescriptor(0x0E04, "network.ap", "network", "object", "NetworkApCapabilities")
 ];
 
 class RegistryLookup {
