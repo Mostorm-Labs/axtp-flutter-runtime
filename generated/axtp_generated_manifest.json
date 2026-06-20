@@ -1,20 +1,20 @@
 {
-  "generatedAt": "2026-06-20T12:30:00Z",
+  "generatedAt": "2026-06-20T13:47:58Z",
   "generator": {
     "name": "@axtp/flutter-runtime-generator",
     "version": "1.0.0",
-    "commit": "237aad0e802dcc5c3fe44773f954f3c7e3b297ee"
+    "commit": "864b5f76e4726d3b574df33fb4d55244b6875bfb"
   },
   "axtpSpec": {
     "repository": "https://github.com/Mostorm-Labs/axtp",
-    "tag": "spec/v0.8.5",
-    "version": "0.8.5",
-    "commit": "5397a57d6784effffd175f3026db0867ad5347f6"
+    "tag": "spec/v0.8.6",
+    "version": "0.8.6",
+    "commit": "3179210ca157851d53d5ff1d661b85bdfca81440"
   },
   "runtime": {
     "name": "axtp-flutter-runtime",
-    "version": "0.8.5.0",
-    "commit": "237aad0e802dcc5c3fe44773f954f3c7e3b297ee"
+    "version": "0.8.6.0",
+    "commit": "864b5f76e4726d3b574df33fb4d55244b6875bfb"
   },
   "inputs": {
     "registryHash": "sha256:44b9076a3ebc28c144bb5a0ed3d9a3c5eae2df1b12fce9850df1ec5735424482",
