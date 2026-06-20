@@ -26,7 +26,7 @@ AxtpTransport <-> AxtpEndpoint -> AxtpCore -> BasicBroker
 - WebSocketJsonRpc：每次 `onBytes()` 输入一条完整 UTF-8 text message，支持 `sid/op/d` request/event/response。
 - Dynamic RPC first：`callJson`、`callTlv`、`callRawBytes` 和 broker raw/json/tlv handler。
 - Mock transport：用于 Flutter 单元测试、demo 和本地业务 handler 验证。
-- Generator 集成：runtime 仓库自己的 `generators/` 会刷新 Flutter generated registry。
+- Generator 集成：runtime 仓库自己的 `devtools/generators/` 会刷新 Flutter generated registry。
 
 ## 边界约束
 

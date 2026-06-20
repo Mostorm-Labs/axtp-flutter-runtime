@@ -11,7 +11,7 @@ import { validateProtocolDefinition } from "./protocolValidator.js";
 import { loadProtocolSources } from "./sourceLoader.js";
 import { validateSpec } from "./validator.js";
 
-const repoRoot = process.env.AXTP_SPEC_PATH ?? path.resolve("..");
+const repoRoot = process.env.AXTP_SPEC_PATH ?? path.resolve("../../third_party/axtp-spec");
 
 function cloneModel(model: ProtocolModel): ProtocolModel {
   return structuredClone(model);
@@ -228,7 +228,7 @@ describe("protocol docs consistency validator", () => {
   it("accepts the current protocol docs facts", async () => {
     const model = await loadCurrentProtocol();
     const docs = await loadProtocolDocs(repoRoot);
-    expect(validateProtocolDocsConsistency(model, docs)).toContain("[OK] docs/specs: STREAM header facts checked");
+    expect(validateProtocolDocsConsistency(model, docs)).toContain("[OK] specs: STREAM header facts checked");
   });
 
   it("rejects missing stream header facts in docs", async () => {
@@ -241,7 +241,7 @@ describe("protocol docs consistency validator", () => {
   it("rejects missing byte order facts in docs", async () => {
     const model = await loadCurrentProtocol();
     const docs = await loadProtocolDocs(repoRoot);
-    docs.frameSpec = docs.frameSpec.replace("Big-Endian", "Little-Endian");
+    docs.frameSpec = docs.frameSpec.replace(/Big-Endian/g, "Little-Endian");
     expect(() => validateProtocolDocsConsistency(model, docs)).toThrow(/Big-Endian/);
   });
 

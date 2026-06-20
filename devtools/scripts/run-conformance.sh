@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 spec_path="${AXTP_SPEC_PATH:-}"
 if [[ -z "$spec_path" ]]; then
@@ -26,7 +26,7 @@ if [[ -z "$spec_path" || -z "$conformance_dir" ]]; then
   exit 2
 fi
 
-profile_path="$root/conformance/runtime-profile.yaml"
+profile_path="$root/devtools/conformance/runtime-profile.yaml"
 if [[ ! -f "$profile_path" ]]; then
   echo "Missing runtime conformance profile: $profile_path" >&2
   exit 2

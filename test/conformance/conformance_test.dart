@@ -403,7 +403,7 @@ void main() {
   test('AXTP conformance', () {
     final specPath = resolveSpecPath();
     final profilePath = Platform.environment['CONFORMANCE_PROFILE_PATH'] ??
-        'conformance/runtime-profile.yaml';
+        'devtools/conformance/runtime-profile.yaml';
     final resultPath = Platform.environment['CONFORMANCE_RESULT_PATH'] ??
         'conformance-results/result.json';
 
