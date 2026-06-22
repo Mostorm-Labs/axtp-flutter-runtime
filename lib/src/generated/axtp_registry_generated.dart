@@ -147,7 +147,25 @@ enum MethodId {
   networkGetInterfaceInfo(0x0E11),
   networkGetWifiCapabilities(0x0E12),
   networkGetApCapabilities(0x0E13),
-  networkGetApClients(0x0E14);
+  networkGetApClients(0x0E14),
+  castGetSession(0x1601),
+  castStopSession(0x1602),
+  castGetAirPlayName(0x1603),
+  castSetAirPlayName(0x1604),
+  castGetAudio(0x1605),
+  castSetAudio(0x1606),
+  castSetMuted(0x1607),
+  castGetPinCodeConfig(0x1608),
+  castSetPinCodeConfig(0x1609),
+  castSetPinCode(0x160A),
+  castGetWindowState(0x160B),
+  castSetWindowState(0x160C),
+  castGetBackendStatus(0x160D),
+  castRestartBackend(0x160E),
+  castGetFlowControlState(0x160F),
+  castSetRenderFps(0x1610),
+  castSetFlowPolicy(0x1611),
+  castGetStatus(0x1612);
 
   const MethodId(this.value);
 
@@ -178,7 +196,20 @@ enum EventId {
   networkWifiScanResultReported(0x0E05),
   networkApConfigChanged(0x0E06),
   networkApStateChanged(0x0E07),
-  networkApClientChanged(0x0E08);
+  networkApClientChanged(0x0E08),
+  castSessionIncoming(0x1601),
+  castSessionStateChanged(0x1602),
+  castSessionStarted(0x1603),
+  castSessionStopped(0x1604),
+  castSessionFailed(0x1605),
+  castAudioChanged(0x1606),
+  castPinCodeChanged(0x1607),
+  castPinCodeRequired(0x1608),
+  castPinCodeAuthFailed(0x1609),
+  castWindowChanged(0x160A),
+  castBackendChanged(0x160B),
+  castFlowControlChanged(0x160C),
+  castStatusChanged(0x160D);
 
   const EventId(this.value);
 
@@ -373,7 +404,14 @@ enum CapabilityId {
   networkInterface(0x0E01),
   networkIp(0x0E02),
   networkWifi(0x0E03),
-  networkAp(0x0E04);
+  networkAp(0x0E04),
+  castSession(0x1601),
+  castAudio(0x1602),
+  castPinCode(0x1603),
+  castWindow(0x1604),
+  castBackend(0x1605),
+  castFlowControl(0x1606),
+  castStatus(0x1607);
 
   const CapabilityId(this.value);
 
@@ -463,7 +501,25 @@ const kMethodRegistry = <MethodDescriptor>[
   MethodDescriptor(0x0E11, "network.getInterfaceInfo", "network", "NetworkGetInterfaceInfoParams", "NetworkInterfaceInfo"),
   MethodDescriptor(0x0E12, "network.getWifiCapabilities", "network", "NetworkGetWifiCapabilitiesParams", "NetworkWifiCapabilities"),
   MethodDescriptor(0x0E13, "network.getApCapabilities", "network", "NetworkGetApCapabilitiesParams", "NetworkApCapabilities"),
-  MethodDescriptor(0x0E14, "network.getApClients", "network", "NetworkGetApConfigParams", "NetworkApClients")
+  MethodDescriptor(0x0E14, "network.getApClients", "network", "NetworkGetApConfigParams", "NetworkApClients"),
+  MethodDescriptor(0x1601, "cast.getSession", "cast", "CastGetSessionParams", "CastSessionState"),
+  MethodDescriptor(0x1602, "cast.stopSession", "cast", "CastStopSessionParams", "CastStopSessionResult"),
+  MethodDescriptor(0x1603, "cast.getAirPlayName", "cast", "Empty", "CastAirPlayNameState"),
+  MethodDescriptor(0x1604, "cast.setAirPlayName", "cast", "CastSetAirPlayNameParams", "CastAirPlayNameState"),
+  MethodDescriptor(0x1605, "cast.getAudio", "cast", "CastGetAudioParams", "CastAudioState"),
+  MethodDescriptor(0x1606, "cast.setAudio", "cast", "CastSetAudioParams", "CastAudioState"),
+  MethodDescriptor(0x1607, "cast.setMuted", "cast", "CastSetMutedParams", "CastAudioState"),
+  MethodDescriptor(0x1608, "cast.getPinCodeConfig", "cast", "CastGetPinCodeConfigParams", "CastPinCodeConfig"),
+  MethodDescriptor(0x1609, "cast.setPinCodeConfig", "cast", "CastSetPinCodeConfigParams", "CastPinCodeConfig"),
+  MethodDescriptor(0x160A, "cast.setPinCode", "cast", "CastSetPinCodeParams", "CastPinCodeConfig"),
+  MethodDescriptor(0x160B, "cast.getWindowState", "cast", "Empty", "CastWindowState"),
+  MethodDescriptor(0x160C, "cast.setWindowState", "cast", "CastSetWindowStateParams", "CastWindowState"),
+  MethodDescriptor(0x160D, "cast.getBackendStatus", "cast", "CastGetBackendStatusParams", "CastBackendStatus"),
+  MethodDescriptor(0x160E, "cast.restartBackend", "cast", "CastRestartBackendParams", "CastRestartBackendResult"),
+  MethodDescriptor(0x160F, "cast.getFlowControlState", "cast", "CastGetFlowControlStateParams", "CastFlowControlState"),
+  MethodDescriptor(0x1610, "cast.setRenderFps", "cast", "CastSetRenderFpsParams", "CastFlowControlState"),
+  MethodDescriptor(0x1611, "cast.setFlowPolicy", "cast", "CastSetFlowPolicyParams", "CastFlowControlState"),
+  MethodDescriptor(0x1612, "cast.getStatus", "cast", "CastGetStatusParams", "CastStatus")
 ];
 
 const kEventRegistry = <EventDescriptor>[
@@ -483,7 +539,20 @@ const kEventRegistry = <EventDescriptor>[
   EventDescriptor(0x0E05, "network.wifiScanResultReported", "network", "NetworkWifiScanResultReportedEvent"),
   EventDescriptor(0x0E06, "network.apConfigChanged", "network", "NetworkApConfigChangedEvent"),
   EventDescriptor(0x0E07, "network.apStateChanged", "network", "NetworkApStateChangedEvent"),
-  EventDescriptor(0x0E08, "network.apClientChanged", "network", "NetworkApClientChangedEvent")
+  EventDescriptor(0x0E08, "network.apClientChanged", "network", "NetworkApClientChangedEvent"),
+  EventDescriptor(0x1601, "cast.sessionIncoming", "cast", "CastSessionIncomingEvent"),
+  EventDescriptor(0x1602, "cast.sessionStateChanged", "cast", "CastSessionStateChangedEvent"),
+  EventDescriptor(0x1603, "cast.sessionStarted", "cast", "CastSessionStartedEvent"),
+  EventDescriptor(0x1604, "cast.sessionStopped", "cast", "CastSessionStoppedEvent"),
+  EventDescriptor(0x1605, "cast.sessionFailed", "cast", "CastSessionFailedEvent"),
+  EventDescriptor(0x1606, "cast.audioChanged", "cast", "CastAudioChangedEvent"),
+  EventDescriptor(0x1607, "cast.pinCodeChanged", "cast", "CastPinCodeChangedEvent"),
+  EventDescriptor(0x1608, "cast.pinCodeRequired", "cast", "CastPinCodeRequiredEvent"),
+  EventDescriptor(0x1609, "cast.pinCodeAuthFailed", "cast", "CastPinCodeAuthFailedEvent"),
+  EventDescriptor(0x160A, "cast.windowChanged", "cast", "CastWindowChangedEvent"),
+  EventDescriptor(0x160B, "cast.backendChanged", "cast", "CastBackendChangedEvent"),
+  EventDescriptor(0x160C, "cast.flowControlChanged", "cast", "CastFlowControlChangedEvent"),
+  EventDescriptor(0x160D, "cast.statusChanged", "cast", "CastStatusChangedEvent")
 ];
 
 const kErrorRegistry = <ErrorDescriptor>[
@@ -656,7 +725,14 @@ const kCapabilityRegistry = <CapabilityDescriptor>[
   CapabilityDescriptor(0x0E01, "network.interface", "network", "object", "NetworkInterfaceCapability"),
   CapabilityDescriptor(0x0E02, "network.ip", "network", "object", "NetworkIpCapability"),
   CapabilityDescriptor(0x0E03, "network.wifi", "network", "object", "NetworkWifiCapabilities"),
-  CapabilityDescriptor(0x0E04, "network.ap", "network", "object", "NetworkApCapabilities")
+  CapabilityDescriptor(0x0E04, "network.ap", "network", "object", "NetworkApCapabilities"),
+  CapabilityDescriptor(0x1601, "cast.session", "cast", "object", "CastSessionCapability"),
+  CapabilityDescriptor(0x1602, "cast.audio", "cast", "object", "CastAudioCapability"),
+  CapabilityDescriptor(0x1603, "cast.pinCode", "cast", "object", "CastPinCodeCapability"),
+  CapabilityDescriptor(0x1604, "cast.window", "cast", "object", "CastWindowCapability"),
+  CapabilityDescriptor(0x1605, "cast.backend", "cast", "object", "CastBackendCapability"),
+  CapabilityDescriptor(0x1606, "cast.flowControl", "cast", "object", "CastFlowControlCapability"),
+  CapabilityDescriptor(0x1607, "cast.status", "cast", "object", "CastStatusCapability")
 ];
 
 class RegistryLookup {
