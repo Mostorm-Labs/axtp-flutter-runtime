@@ -182,11 +182,15 @@ class RpcResponseData {
     this.encoding = RpcEncoding.json,
     Iterable<int>? body,
     this.overrideEncoding = false,
+    this.statusCode = ErrorCode.success,
+    this.overrideStatus = false,
   }) : body = bytesFrom(body);
 
   final RpcEncoding encoding;
   final Bytes body;
   final bool overrideEncoding;
+  final ErrorCode statusCode;
+  final bool overrideStatus;
 }
 
 typedef RawMethodHandler = Iterable<int> Function(RpcPayload request);
@@ -198,6 +202,10 @@ typedef JsonRpcHandler = String Function(RpcContext context, String paramsJson);
 typedef TlvRpcHandler = Iterable<int> Function(
   RpcContext context,
   Bytes body,
+);
+typedef StreamHandler = BrokerResult? Function(
+  BrokerContext context,
+  StreamPayload stream,
 );
 
 class BusinessRouter {
@@ -294,6 +302,9 @@ class BusinessRouter {
         bodyEncoding: _bodyEncodingFor(data.encoding),
       );
     }
+    if (data.overrideStatus) {
+      response = response.copyWith(statusCode: data.statusCode);
+    }
     return response.copyWith(body: data.body);
   }
 
@@ -306,6 +317,7 @@ class BasicBroker {
   final Queue<BrokerTask> _tasks = Queue<BrokerTask>();
   final Queue<BrokerResult> _results = Queue<BrokerResult>();
   final BusinessRouter _router = BusinessRouter();
+  StreamHandler? _streamHandler;
 
   MethodRegistry get registry => _router.registry;
 
@@ -333,7 +345,15 @@ class BasicBroker {
         case BrokerTaskType.rpcEvent:
           _results.add(BrokerResult.event(task.rpc));
         case BrokerTaskType.streamData:
-          _results.add(BrokerResult.streamData(task.stream));
+          final handler = _streamHandler;
+          if (handler == null) {
+            _results.add(BrokerResult.streamData(task.stream));
+          } else {
+            final result = handler(task.context, task.stream);
+            if (result != null) {
+              _results.add(result);
+            }
+          }
         case BrokerTaskType.streamClose:
           _results.add(BrokerResult.streamClose(task.stream));
         case BrokerTaskType.streamOpen:
@@ -370,5 +390,9 @@ class BasicBroker {
 
   void registerTlvMethod(String methodName, TlvRpcHandler handler) {
     _router.registerTlvMethod(methodName, handler);
+  }
+
+  void registerStreamHandler(StreamHandler handler) {
+    _streamHandler = handler;
   }
 }
