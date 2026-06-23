@@ -111,6 +111,9 @@ enum RpcOp {
 
 enum MethodId {
   deviceGetInfo(0x0101),
+  deviceGetPairingCode(0x0102),
+  deviceGetEnrollmentState(0x0103),
+  deviceSetEnrollmentState(0x0104),
   firmwareGetUpdateCapabilities(0x0401),
   firmwareBeginUpdate(0x0402),
   firmwareGetUpdateState(0x0408),
@@ -130,6 +133,11 @@ enum MethodId {
   audioCloseStream(0x0911),
   audioGetStreamState(0x0912),
   audioGetStreamSourceState(0x0913),
+  signageGetPlaylistCapabilities(0x0D01),
+  signageGetPlaylistConfig(0x0D02),
+  signageSetPlaylistConfig(0x0D03),
+  signageResetPlaylistConfig(0x0D04),
+  signageGetPlaylistItemUrl(0x0D05),
   networkGetIpConfig(0x0E02),
   networkSetIpConfig(0x0E03),
   networkGetWifiConfig(0x0E04),
@@ -165,7 +173,13 @@ enum MethodId {
   castGetFlowControlState(0x160F),
   castSetRenderFps(0x1610),
   castSetFlowPolicy(0x1611),
-  castGetStatus(0x1612);
+  castGetStatus(0x1612),
+  softwareGetConfig(0x1701),
+  softwareSetConfig(0x1702),
+  softwareResetConfig(0x1703),
+  softwareGetUpdatePolicy(0x1704),
+  softwareSetUpdatePolicy(0x1705),
+  softwareResetUpdatePolicy(0x1706);
 
   const MethodId(this.value);
 
@@ -180,6 +194,7 @@ enum MethodId {
 }
 
 enum EventId {
+  deviceEnrollmentStateChanged(0x0102),
   firmwareUpdateProgressReported(0x0402),
   firmwareUpdateStateChanged(0x0403),
   videoStreamStateChanged(0x0806),
@@ -189,6 +204,7 @@ enum EventId {
   audioStreamStateChanged(0x0902),
   audioStreamSourceStateChanged(0x0903),
   audioStreamStatsReported(0x0904),
+  signagePlaylistConfigChanged(0x0D01),
   networkInterfaceStateChanged(0x0E01),
   networkIpConfigChanged(0x0E02),
   networkWifiConfigChanged(0x0E03),
@@ -209,7 +225,9 @@ enum EventId {
   castWindowChanged(0x160A),
   castBackendChanged(0x160B),
   castFlowControlChanged(0x160C),
-  castStatusChanged(0x160D);
+  castStatusChanged(0x160D),
+  softwareConfigChanged(0x1701),
+  softwareUpdatePolicyChanged(0x1702);
 
   const EventId(this.value);
 
@@ -292,6 +310,8 @@ enum ErrorCode {
   deviceModeConflict(0x0107),
   deviceResourceBusy(0x0108),
   deviceHardwareFailure(0x0109),
+  enrollmentCodeExpired(0x010A),
+  enrollmentCodeAlreadyUsed(0x010B),
   capabilityNotFound(0x0201),
   capabilityDomainNotFound(0x0202),
   capabilityMethodUnsupported(0x0203),
@@ -397,10 +417,12 @@ enum CapabilityId {
   protocolPayloadStream(0x0003),
   protocolReservedRequestIdWidth(0x0009),
   deviceInfo(0x0101),
+  deviceEnrollment(0x0102),
   firmwareUpdate(0x0401),
   videoStream(0x0801),
   audioAlgorithm(0x0901),
   audioStream(0x0902),
+  signagePlaylist(0x0D01),
   networkInterface(0x0E01),
   networkIp(0x0E02),
   networkWifi(0x0E03),
@@ -411,7 +433,9 @@ enum CapabilityId {
   castWindow(0x1604),
   castBackend(0x1605),
   castFlowControl(0x1606),
-  castStatus(0x1607);
+  castStatus(0x1607),
+  softwareConfig(0x1701),
+  softwareUpdatePolicy(0x1702);
 
   const CapabilityId(this.value);
 
@@ -465,6 +489,9 @@ class CapabilityDescriptor {
 
 const kMethodRegistry = <MethodDescriptor>[
   MethodDescriptor(0x0101, "device.getInfo", "device", "GetDeviceInfoParams", "DeviceInfo"),
+  MethodDescriptor(0x0102, "device.getPairingCode", "device", "DeviceGetPairingCodeParams", "DevicePairingCodeInfo"),
+  MethodDescriptor(0x0103, "device.getEnrollmentState", "device", "DeviceGetEnrollmentStateParams", "DeviceEnrollmentInfo"),
+  MethodDescriptor(0x0104, "device.setEnrollmentState", "device", "DeviceSetEnrollmentStateParams", "DeviceSetEnrollmentStateResult"),
   MethodDescriptor(0x0401, "firmware.getUpdateCapabilities", "firmware", "Empty", "FirmwareUpdateCapabilities"),
   MethodDescriptor(0x0402, "firmware.beginUpdate", "firmware", "BeginUpdateParams", "BeginUpdateResult"),
   MethodDescriptor(0x0408, "firmware.getUpdateState", "firmware", "GetUpdateStateParams", "FirmwareUpdateState"),
@@ -484,6 +511,11 @@ const kMethodRegistry = <MethodDescriptor>[
   MethodDescriptor(0x0911, "audio.closeStream", "audio", "AudioCloseStreamParams", "AudioCloseStreamResult"),
   MethodDescriptor(0x0912, "audio.getStreamState", "audio", "AudioGetStreamStateParams", "AudioStreamState"),
   MethodDescriptor(0x0913, "audio.getStreamSourceState", "audio", "AudioGetStreamSourceStateParams", "AudioStreamSourceState"),
+  MethodDescriptor(0x0D01, "signage.getPlaylistCapabilities", "signage", "SignageGetPlaylistCapabilitiesParams", "SignagePlaylistCapabilitiesResult"),
+  MethodDescriptor(0x0D02, "signage.getPlaylistConfig", "signage", "SignageGetPlaylistConfigParams", "SignagePlaylistConfigResult"),
+  MethodDescriptor(0x0D03, "signage.setPlaylistConfig", "signage", "SignageSetPlaylistConfigParams", "SignageSetPlaylistConfigResult"),
+  MethodDescriptor(0x0D04, "signage.resetPlaylistConfig", "signage", "SignageResetPlaylistConfigParams", "SignagePlaylistConfigResult"),
+  MethodDescriptor(0x0D05, "signage.getPlaylistItemUrl", "signage", "SignageGetPlaylistItemUrlParams", "SignageGetPlaylistItemUrlResult"),
   MethodDescriptor(0x0E02, "network.getIpConfig", "network", "NetworkGetIpConfigParams", "NetworkIpConfig"),
   MethodDescriptor(0x0E03, "network.setIpConfig", "network", "NetworkSetIpConfigParams", "NetworkSetIpConfigResult"),
   MethodDescriptor(0x0E04, "network.getWifiConfig", "network", "NetworkGetWifiConfigParams", "NetworkWifiConfig"),
@@ -519,10 +551,17 @@ const kMethodRegistry = <MethodDescriptor>[
   MethodDescriptor(0x160F, "cast.getFlowControlState", "cast", "CastGetFlowControlStateParams", "CastFlowControlState"),
   MethodDescriptor(0x1610, "cast.setRenderFps", "cast", "CastSetRenderFpsParams", "CastFlowControlState"),
   MethodDescriptor(0x1611, "cast.setFlowPolicy", "cast", "CastSetFlowPolicyParams", "CastFlowControlState"),
-  MethodDescriptor(0x1612, "cast.getStatus", "cast", "CastGetStatusParams", "CastStatus")
+  MethodDescriptor(0x1612, "cast.getStatus", "cast", "CastGetStatusParams", "CastStatus"),
+  MethodDescriptor(0x1701, "software.getConfig", "software", "SoftwareGetConfigParams", "SoftwareConfig"),
+  MethodDescriptor(0x1702, "software.setConfig", "software", "SoftwareSetConfigParams", "SoftwareSetConfigResult"),
+  MethodDescriptor(0x1703, "software.resetConfig", "software", "SoftwareResetConfigParams", "SoftwareConfig"),
+  MethodDescriptor(0x1704, "software.getUpdatePolicy", "software", "SoftwareGetUpdatePolicyParams", "SoftwareUpdatePolicy"),
+  MethodDescriptor(0x1705, "software.setUpdatePolicy", "software", "SoftwareSetUpdatePolicyParams", "SoftwareSetUpdatePolicyResult"),
+  MethodDescriptor(0x1706, "software.resetUpdatePolicy", "software", "SoftwareResetUpdatePolicyParams", "SoftwareUpdatePolicy")
 ];
 
 const kEventRegistry = <EventDescriptor>[
+  EventDescriptor(0x0102, "device.enrollmentStateChanged", "device", "DeviceEnrollmentStateChangedEvent"),
   EventDescriptor(0x0402, "firmware.updateProgressReported", "firmware", "FirmwareUpdateProgressEvent"),
   EventDescriptor(0x0403, "firmware.updateStateChanged", "firmware", "FirmwareUpdateStateChangedEvent"),
   EventDescriptor(0x0806, "video.streamStateChanged", "video", "VideoStreamStateChangedEvent"),
@@ -532,6 +571,7 @@ const kEventRegistry = <EventDescriptor>[
   EventDescriptor(0x0902, "audio.streamStateChanged", "audio", "AudioStreamStateChangedEvent"),
   EventDescriptor(0x0903, "audio.streamSourceStateChanged", "audio", "AudioStreamSourceStateChangedEvent"),
   EventDescriptor(0x0904, "audio.streamStatsReported", "audio", "AudioStreamStatsReportedEvent"),
+  EventDescriptor(0x0D01, "signage.playlistConfigChanged", "signage", "SignagePlaylistConfigChangedEvent"),
   EventDescriptor(0x0E01, "network.interfaceStateChanged", "network", "NetworkInterfaceStateChangedEvent"),
   EventDescriptor(0x0E02, "network.ipConfigChanged", "network", "NetworkIpConfigChangedEvent"),
   EventDescriptor(0x0E03, "network.wifiConfigChanged", "network", "NetworkWifiConfigChangedEvent"),
@@ -552,7 +592,9 @@ const kEventRegistry = <EventDescriptor>[
   EventDescriptor(0x160A, "cast.windowChanged", "cast", "CastWindowChangedEvent"),
   EventDescriptor(0x160B, "cast.backendChanged", "cast", "CastBackendChangedEvent"),
   EventDescriptor(0x160C, "cast.flowControlChanged", "cast", "CastFlowControlChangedEvent"),
-  EventDescriptor(0x160D, "cast.statusChanged", "cast", "CastStatusChangedEvent")
+  EventDescriptor(0x160D, "cast.statusChanged", "cast", "CastStatusChangedEvent"),
+  EventDescriptor(0x1701, "software.configChanged", "software", "SoftwareConfigChangedEvent"),
+  EventDescriptor(0x1702, "software.updatePolicyChanged", "software", "SoftwareUpdatePolicyChangedEvent")
 ];
 
 const kErrorRegistry = <ErrorDescriptor>[
@@ -624,6 +666,8 @@ const kErrorRegistry = <ErrorDescriptor>[
   ErrorDescriptor(0x0107, "DEVICE_MODE_CONFLICT", "device", false),
   ErrorDescriptor(0x0108, "DEVICE_RESOURCE_BUSY", "device", true),
   ErrorDescriptor(0x0109, "DEVICE_HARDWARE_FAILURE", "device", false),
+  ErrorDescriptor(0x010A, "ENROLLMENT_CODE_EXPIRED", "device", true),
+  ErrorDescriptor(0x010B, "ENROLLMENT_CODE_ALREADY_USED", "device", false),
   ErrorDescriptor(0x0201, "CAPABILITY_NOT_FOUND", "capability", false),
   ErrorDescriptor(0x0202, "CAPABILITY_DOMAIN_NOT_FOUND", "capability", false),
   ErrorDescriptor(0x0203, "CAPABILITY_METHOD_UNSUPPORTED", "capability", false),
@@ -718,10 +762,12 @@ const kCapabilityRegistry = <CapabilityDescriptor>[
   CapabilityDescriptor(0x0003, "protocol.payload.stream", "protocol", "bool", ""),
   CapabilityDescriptor(0x0009, "protocol.reservedRequestIdWidth", "protocol", "reserved", ""),
   CapabilityDescriptor(0x0101, "device.info", "device", "object", "DeviceInfoCapability"),
+  CapabilityDescriptor(0x0102, "device.enrollment", "device", "object", "DeviceEnrollmentCapability"),
   CapabilityDescriptor(0x0401, "firmware.update", "firmware", "object", "FirmwareUpdateCapabilities"),
   CapabilityDescriptor(0x0801, "video.stream", "video", "object", "VideoStreamCapabilities"),
   CapabilityDescriptor(0x0901, "audio.algorithm", "audio", "object", "AudioAlgorithmCapability"),
   CapabilityDescriptor(0x0902, "audio.stream", "audio", "object", "AudioStreamCapabilities"),
+  CapabilityDescriptor(0x0D01, "signage.playlist", "signage", "object", "SignagePlaylistCapability"),
   CapabilityDescriptor(0x0E01, "network.interface", "network", "object", "NetworkInterfaceCapability"),
   CapabilityDescriptor(0x0E02, "network.ip", "network", "object", "NetworkIpCapability"),
   CapabilityDescriptor(0x0E03, "network.wifi", "network", "object", "NetworkWifiCapabilities"),
@@ -732,7 +778,9 @@ const kCapabilityRegistry = <CapabilityDescriptor>[
   CapabilityDescriptor(0x1604, "cast.window", "cast", "object", "CastWindowCapability"),
   CapabilityDescriptor(0x1605, "cast.backend", "cast", "object", "CastBackendCapability"),
   CapabilityDescriptor(0x1606, "cast.flowControl", "cast", "object", "CastFlowControlCapability"),
-  CapabilityDescriptor(0x1607, "cast.status", "cast", "object", "CastStatusCapability")
+  CapabilityDescriptor(0x1607, "cast.status", "cast", "object", "CastStatusCapability"),
+  CapabilityDescriptor(0x1701, "software.config", "software", "object", "SoftwareConfigCapability"),
+  CapabilityDescriptor(0x1702, "software.updatePolicy", "software", "object", "SoftwareUpdatePolicyCapability")
 ];
 
 class RegistryLookup {
