@@ -1,6 +1,6 @@
 name: axtp_flutter
 description: Dart and Flutter runtime for AXTP core, broker, endpoint, and dynamic RPC.
-version: 0.10.0
+version: 0.11.0
 publish_to: none
 
 environment:
