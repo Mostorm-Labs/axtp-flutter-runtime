@@ -162,7 +162,7 @@ void main() {
 
     transport.injectIncoming(
       utf8.encode(
-        '{"sid":"s1","op":7,"d":{"id":1,"method":"audio.getAlgorithmConfig","params":{}}}',
+        '{"sid":"legacy-session","op":7,"d":{"id":1,"method":"audio.getAlgorithmConfig","params":{}}}',
       ),
     );
     endpoint.poll();
@@ -170,10 +170,45 @@ void main() {
     final outgoing = transport.tryPopOutgoing();
     expect(outgoing, isNotNull);
     final response = jsonDecode(utf8.decode(outgoing!)) as Map<String, Object?>;
-    expect(response['sid'], 's1');
+    expect(response['sid'], 'legacy-session');
     expect(response['op'], RpcOp.requestResponse.value);
     final data = response['d'] as Map<String, Object?>;
     expect(data['status'], <String, Object?>{'ok': true, 'code': 0});
     expect(data['result'], <String, Object?>{'ok': true});
+  });
+
+  test('websocket json rpc error response uses object status without result',
+      () {
+    final chunks = <Bytes>[];
+    final outbound = OutboundProcessor(chunks.add)
+      ..wireMode = AxtpWireMode.webSocketJsonRpc;
+
+    outbound.sendRpcError(
+      RpcPayload(
+        encoding: RpcEncoding.json,
+        op: RpcOp.requestResponse,
+        requestId: 2,
+        statusCode: ErrorCode.rpcMethodNotFound,
+        meta: const PayloadMeta(
+          sourceProtocol: SourceProtocol.jsonRpc,
+          jsonSid: 'legacy-session',
+        ),
+        body: utf8.encode('{"ignored":true}'),
+      ),
+    );
+
+    expect(chunks, hasLength(1));
+    final response =
+        jsonDecode(utf8.decode(chunks.single)) as Map<String, Object?>;
+    expect(response['sid'], 'legacy-session');
+    expect(response['op'], RpcOp.requestResponse.value);
+    final data = response['d'] as Map<String, Object?>;
+    expect(data['id'], 2);
+    expect(data['status'], <String, Object?>{
+      'ok': false,
+      'code': ErrorCode.rpcMethodNotFound.value,
+      'msg': 'RPC_METHOD_NOT_FOUND',
+    });
+    expect(data, isNot(contains('result')));
   });
 }

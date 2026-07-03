@@ -288,7 +288,7 @@ bool testEventEmit() {
       bodyEncoding: RpcBodyEncoding.noneValue,
       meta: const PayloadMeta(
         sourceProtocol: SourceProtocol.jsonRpc,
-        jsonSid: 's1',
+        jsonSid: 'legacy-session',
       ),
       body: utf8.encode('{"reason":"user_request","applyState":"applied"}'),
     ),
