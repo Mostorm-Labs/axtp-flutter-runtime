@@ -276,7 +276,12 @@ class BusinessRouter {
     );
     final handler = _handlers[request.methodOrEventId];
     if (handler == null) {
-      return response.copyWith(statusCode: ErrorCode.rpcMethodNotFound);
+      final registered = registry.findMethodName(request.methodOrEventId);
+      return response.copyWith(
+        statusCode: registered == null
+            ? ErrorCode.rpcMethodNotFound
+            : ErrorCode.notSupported,
+      );
     }
 
     final methodName = registry.findMethodName(request.methodOrEventId) ?? '';

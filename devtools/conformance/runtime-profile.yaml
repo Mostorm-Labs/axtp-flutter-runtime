@@ -1,12 +1,18 @@
 runtime: axtp-flutter-runtime
 spec_min: spec/v0.0.2
-required_levels:
+required_levels: []
+optional_levels: []
+unsupported_levels:
   - core
   - framed-binary
-optional_levels:
   - capability
   - websocket-jsonrpc
   - event
   - stream
-unsupported_levels: []
-
+unsupported_reasons:
+  core: no complete shared YAML graph adapter in Flutter conformance runner
+  framed-binary: no complete shared YAML graph adapter in Flutter conformance runner
+  capability: no dynamic shared-manifest graph adapter; generated registry checks are advisory only
+  websocket-jsonrpc: no WebSocket session-role adapter in the conformance runner
+  event: no dynamic shared-manifest graph adapter or subscription session
+  stream: no dynamic shared-manifest graph adapter for stream control/data cases

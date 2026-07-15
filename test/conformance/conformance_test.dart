@@ -20,7 +20,7 @@ class CaseResult {
 
   final String id;
   final String level;
-  final Requirement requirement;
+  Requirement requirement;
   CaseStatus status;
   double durationMs = 0;
   String message;
@@ -53,15 +53,15 @@ final cases = <CaseResult>[
   CaseResult(
       'session.hello_identify_identified',
       'websocket-jsonrpc',
-      Requirement.optional,
-      CaseStatus.skipped,
-      'Dart runtime exposes JSON-RPC wire encoding but no WebSocket session adapter'),
+      Requirement.unsupported,
+      CaseStatus.unsupported,
+      'unsupported: no WebSocket session-role adapter in runner'),
   CaseResult(
       'session.request_before_identified',
       'websocket-jsonrpc',
-      Requirement.optional,
-      CaseStatus.skipped,
-      'Dart runtime exposes JSON-RPC wire encoding but no WebSocket session adapter'),
+      Requirement.unsupported,
+      CaseStatus.unsupported,
+      'unsupported: no WebSocket session-role adapter in runner'),
   CaseResult('rpc.request_response_json', 'core', Requirement.required,
       CaseStatus.pending),
   CaseResult(
@@ -77,23 +77,39 @@ final cases = <CaseResult>[
   CaseResult(
       'event.subscribe_event',
       'event',
-      Requirement.optional,
-      CaseStatus.skipped,
-      'event subscription intent requires a WebSocket session adapter'),
+      Requirement.unsupported,
+      CaseStatus.unsupported,
+      'unsupported: no dynamic manifest graph adapter or subscription session'),
   CaseResult(
       'event.unsubscribe_event',
       'event',
-      Requirement.optional,
-      CaseStatus.skipped,
-      'event subscription intent requires a WebSocket session adapter'),
+      Requirement.unsupported,
+      CaseStatus.unsupported,
+      'unsupported: no dynamic manifest graph adapter or subscription session'),
   CaseResult(
-      'event.emit_event', 'event', Requirement.optional, CaseStatus.pending),
-  CaseResult('capability.get_all', 'capability', Requirement.optional,
-      CaseStatus.pending),
-  CaseResult('capability.method_binding', 'capability', Requirement.optional,
-      CaseStatus.pending),
-  CaseResult('capability.unsupported_method', 'capability',
-      Requirement.optional, CaseStatus.pending),
+      'event.emit_event',
+      'event',
+      Requirement.unsupported,
+      CaseStatus.unsupported,
+      'unsupported: no dynamic shared-manifest graph adapter'),
+  CaseResult(
+      'capability.get_all',
+      'capability',
+      Requirement.unsupported,
+      CaseStatus.unsupported,
+      'unsupported: no dynamic shared-manifest graph adapter'),
+  CaseResult(
+      'capability.method_binding',
+      'capability',
+      Requirement.unsupported,
+      CaseStatus.unsupported,
+      'unsupported: no dynamic shared-manifest graph adapter'),
+  CaseResult(
+      'capability.unsupported_method',
+      'capability',
+      Requirement.unsupported,
+      CaseStatus.unsupported,
+      'unsupported: no dynamic shared-manifest graph adapter'),
   CaseResult('error.standard_error_shape', 'core', Requirement.required,
       CaseStatus.pending),
   CaseResult(
@@ -111,17 +127,21 @@ final cases = <CaseResult>[
   CaseResult(
       'stream.stream_open',
       'stream',
-      Requirement.optional,
-      CaseStatus.skipped,
-      'stream.open RPC control-plane method is not part of the generated spec/v0.0.2 registry'),
+      Requirement.unsupported,
+      CaseStatus.unsupported,
+      'unsupported: no dynamic shared-manifest graph adapter for stream control'),
   CaseResult(
-      'stream.stream_data', 'stream', Requirement.optional, CaseStatus.pending),
+      'stream.stream_data',
+      'stream',
+      Requirement.unsupported,
+      CaseStatus.unsupported,
+      'unsupported: no dynamic shared-manifest graph adapter for stream data'),
   CaseResult(
       'stream.stream_close',
       'stream',
-      Requirement.optional,
-      CaseStatus.skipped,
-      'stream.close RPC control-plane method is not part of the generated spec/v0.0.2 registry'),
+      Requirement.unsupported,
+      CaseStatus.unsupported,
+      'unsupported: no dynamic shared-manifest graph adapter for stream control'),
 ];
 
 bool bytesEqual(Iterable<int> left, Iterable<int> right) {
@@ -364,14 +384,16 @@ void writeResult(String outputPath, String profilePath) {
     'runtimeVersion': AxtpGeneratedVersion.runtimeVersion,
     'specTag': AxtpGeneratedVersion.specTag,
     'profile': profilePath,
-    'requiredLevels': <String>['core', 'framed-binary'],
-    'optionalLevels': <String>[
+    'requiredLevels': <String>[],
+    'optionalLevels': <String>[],
+    'unsupportedLevels': <String>[
+      'core',
+      'framed-binary',
       'capability',
       'websocket-jsonrpc',
       'event',
       'stream',
     ],
-    'unsupportedLevels': <String>[],
     'summary': summary,
     'cases': cases.map((item) => item.toJson()).toList(),
   };
@@ -414,6 +436,17 @@ void main() {
       fail('runtime conformance profile not found: $profilePath');
     }
 
+    // This runner has no complete shared YAML manifest graph/session adapter.
+    // Classify every manifest case as unsupported rather than presenting
+    // local wrapper checks as shared conformance passes.
+    for (final item in cases) {
+      item.requirement = Requirement.unsupported;
+      item.status = CaseStatus.unsupported;
+      item.message =
+          'unsupported: Flutter lacks complete shared YAML graph/session adapter';
+    }
+
+    /*
     runCase('handshake.open_accept', testOpenAccept);
     runCase('handshake.close', testClose);
     runCase('handshake.ping_pong', testPingPong);
@@ -426,6 +459,7 @@ void main() {
     runCase('capability.unsupported_method', () => testMethodNotFoundWithId(4));
     runCase('error.standard_error_shape', () => testMethodNotFoundWithId(99));
     runCase('stream.stream_data', testStreamData);
+    */
 
     writeResult(resultPath, profilePath);
 

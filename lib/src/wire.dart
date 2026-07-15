@@ -611,6 +611,10 @@ class JsonRpcDecoder implements ByteSink {
         case RpcOp.identify:
         case RpcOp.reidentify:
           _decodeSessionRpc(decoded, data, op);
+        case RpcOp.hello:
+          // axtpVersion is advisory: absent, malformed, or newer values do
+          // not gate the session. Preserve the Hello for the session layer.
+          _decodeSessionRpc(decoded, data, op);
         case RpcOp.requestBatch:
           _decodeBatch(decoded, data);
         default:

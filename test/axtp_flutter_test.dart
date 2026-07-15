@@ -211,4 +211,56 @@ void main() {
     });
     expect(data, isNot(contains('result')));
   });
+
+  test('websocket Hello accepts absent malformed and differing axtpVersion',
+      () {
+    for (final data in <Map<String, Object?>>[
+      <String, Object?>{'rpcVersion': 1},
+      <String, Object?>{'axtpVersion': 'not-semver', 'rpcVersion': 1},
+      <String, Object?>{'axtpVersion': '2.0.0', 'rpcVersion': 1},
+    ]) {
+      final sink = CapturingPayloadSink();
+      final inbound = InboundProcessor(sink)
+        ..wireMode = AxtpWireMode.webSocketJsonRpc;
+      inbound.onBytes(utf8.encode(jsonEncode(<String, Object?>{
+        'sid': '',
+        'op': RpcOp.hello.value,
+        'd': data,
+      })));
+
+      expect(sink.rpcs, hasLength(1));
+      expect(sink.rpcs.single.op, RpcOp.hello);
+    }
+  });
+
+  test('generated but unavailable method returns NOT_SUPPORTED and stays live',
+      () {
+    final broker = BasicBroker();
+
+    RpcPayload dispatch(RpcPayload request) {
+      broker.submit(BrokerTask(
+        type: BrokerTaskType.rpcRequest,
+        rpc: request,
+      ));
+      broker.poll();
+      return broker.pollResult()!.rpc;
+    }
+
+    final unavailable = dispatch(RpcPayload(
+      op: RpcOp.request,
+      requestId: 10,
+      methodOrEventId: MethodId.audioSetAlgorithmConfig.value,
+    ));
+    expect(unavailable.statusCode, ErrorCode.notSupported);
+
+    broker.registerMethod(
+        MethodId.audioGetAlgorithmConfig.value, (request) => <int>[0x01]);
+    final live = dispatch(RpcPayload(
+      op: RpcOp.request,
+      requestId: 11,
+      methodOrEventId: MethodId.audioGetAlgorithmConfig.value,
+    ));
+    expect(live.statusCode, ErrorCode.success);
+    expect(live.requestId, 11);
+  });
 }
