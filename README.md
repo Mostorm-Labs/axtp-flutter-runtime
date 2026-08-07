@@ -63,6 +63,7 @@ dart run tool/smoke.dart
 ## Documentation
 
 - [Flutter runtime patterns](docs/AXTP_FLUTTER_RUNTIME_PATTERNS.md)
+- [WebSocket JSON data flow](docs/WEBSOCKET_JSON_DATA_FLOW.md)
 
 ## Spec Lock Checks
 

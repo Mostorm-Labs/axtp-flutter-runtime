@@ -7,8 +7,14 @@ import 'transport.dart';
 import 'wire.dart';
 
 class AxtpCore implements PayloadSink {
-  AxtpCore()
-      : _inbound = InboundProcessor(_PayloadSinkPort()),
+  /// 创建 AXTP 核心处理器。
+  ///
+  /// [onRpcEvent] 用于把服务端主动发送的 `RpcOp.event` 直接交给上层客户端。
+  /// 未设置时保留原有的 core event 队列行为，方便 endpoint/broker 场景继续
+  /// 处理事件。
+  AxtpCore({void Function(RpcPayload event)? onRpcEvent})
+      : _onRpcEvent = onRpcEvent,
+        _inbound = InboundProcessor(_PayloadSinkPort()),
         _outbound = OutboundProcessor((_) {}) {
     _byteSink = _ByteSinkPort(this);
     _payloadPort = _PayloadSinkPort(this);
@@ -17,11 +23,14 @@ class AxtpCore implements PayloadSink {
   }
 
   late final ByteSink _byteSink;
+  final void Function(RpcPayload event)? _onRpcEvent;
   late final _PayloadSinkPort _payloadPort;
   late InboundProcessor _inbound;
   late OutboundProcessor _outbound;
   final Queue<CoreEvent> _events = Queue<CoreEvent>();
   final Queue<Bytes> _outboundBytes = Queue<Bytes>();
+  final Map<RpcOp, Queue<RpcPayload>> _sessionRpcs =
+      <RpcOp, Queue<RpcPayload>>{};
   final Set<int> _pendingRequests = <int>{};
   final Map<int, RpcPayload> _resolvedResponses = <int, RpcPayload>{};
   bool _controlSessionOpen = false;
@@ -70,12 +79,24 @@ class AxtpCore implements PayloadSink {
     return _resolvedResponses.remove(requestId);
   }
 
+  RpcPayload? tryTakeSessionRpc(RpcOp op) {
+    final queue = _sessionRpcs[op];
+    if (queue == null || queue.isEmpty) return null;
+    final payload = queue.removeFirst();
+    if (queue.isEmpty) _sessionRpcs.remove(op);
+    return payload;
+  }
+
   Bytes? tryPopOutboundBytes() {
     if (_outboundBytes.isEmpty) return null;
     return _outboundBytes.removeFirst();
   }
 
   void sendRpcRequest(RpcPayload payload) {
+    _outbound.sendRpcRequest(payload);
+  }
+
+  void sendRpcSession(RpcPayload payload) {
     _outbound.sendRpcRequest(payload);
   }
 
@@ -89,12 +110,21 @@ class AxtpCore implements PayloadSink {
 
   @override
   void onRpc(RpcPayload payload) {
+    if (_isSessionRpc(payload.op)) {
+      (_sessionRpcs[payload.op] ??= Queue<RpcPayload>()).add(payload);
+      return;
+    }
     if (payload.op == RpcOp.request) {
       _events.add(CoreEvent.rpcRequest(payload));
       return;
     }
     if (payload.op == RpcOp.event) {
-      _events.add(CoreEvent.rpcEvent(payload));
+      final onRpcEvent = _onRpcEvent;
+      if (onRpcEvent != null) {
+        onRpcEvent(payload);
+      } else {
+        _events.add(CoreEvent.rpcEvent(payload));
+      }
       return;
     }
     if (payload.op == RpcOp.requestResponse) {
@@ -110,6 +140,26 @@ class AxtpCore implements PayloadSink {
     if (payload.op == RpcOp.requestBatchResponse &&
         payload.meta.sourceProtocol == SourceProtocol.jsonRpc) {
       _outbound.sendRpcResponse(payload);
+    }
+  }
+
+  bool _isSessionRpc(RpcOp op) {
+    switch (op) {
+      case RpcOp.hello:
+      case RpcOp.helloAck:
+      case RpcOp.identify:
+      case RpcOp.identified:
+      case RpcOp.reidentify:
+      case RpcOp.subscribe:
+      case RpcOp.bye:
+      case RpcOp.byeAck:
+        return true;
+      case RpcOp.event:
+      case RpcOp.request:
+      case RpcOp.requestResponse:
+      case RpcOp.requestBatch:
+      case RpcOp.requestBatchResponse:
+        return false;
     }
   }
 

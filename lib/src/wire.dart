@@ -606,10 +606,18 @@ class JsonRpcDecoder implements ByteSink {
       switch (op) {
         case RpcOp.request:
           _decodeRequest(decoded, data);
+        case RpcOp.requestResponse:
+        case RpcOp.requestBatchResponse:
+          _decodeResponse(decoded, data, op);
         case RpcOp.event:
           _decodeEvent(decoded, data);
         case RpcOp.identify:
         case RpcOp.reidentify:
+        case RpcOp.helloAck:
+        case RpcOp.identified:
+        case RpcOp.subscribe:
+        case RpcOp.bye:
+        case RpcOp.byeAck:
           _decodeSessionRpc(decoded, data, op);
         case RpcOp.hello:
           // axtpVersion is advisory: absent, malformed, or newer values do
@@ -617,8 +625,6 @@ class JsonRpcDecoder implements ByteSink {
           _decodeSessionRpc(decoded, data, op);
         case RpcOp.requestBatch:
           _decodeBatch(decoded, data);
-        default:
-          return;
       }
     } catch (_) {
       return;
@@ -719,6 +725,49 @@ class JsonRpcDecoder implements ByteSink {
     );
   }
 
+  void _decodeResponse(
+    Map<String, Object?> object,
+    Map<String, Object?> data,
+    RpcOp op,
+  ) {
+    final requestId = _parseRequestId(data);
+    final status = data['status'];
+    if (status is! Map<String, Object?>) {
+      throw const FormatException('missing response status');
+    }
+    final rawCode = status['code'];
+    if (rawCode is! int) {
+      throw const FormatException('invalid response code');
+    }
+    final statusCode = ErrorCode.fromValue(rawCode);
+    if (statusCode == null) {
+      throw const FormatException('unknown response code');
+    }
+    final hasResult = data.containsKey('result');
+    if (hasResult && statusCode != ErrorCode.success) {
+      throw const FormatException('error response carries result');
+    }
+    _sink.onRpc(
+      RpcPayload(
+        encoding: RpcEncoding.json,
+        op: op,
+        requestId: requestId,
+        statusCode: statusCode,
+        bodyEncoding: RpcBodyEncoding.noneValue,
+        meta: PayloadMeta(
+          sourceProtocol: SourceProtocol.jsonRpc,
+          requestId: requestId,
+          jsonSid: _parseSid(object),
+        ),
+        body: hasResult
+            ? _jsonToBytes(data['result'])
+            : statusCode == ErrorCode.success
+                ? null
+                : _jsonToBytes(data),
+      ),
+    );
+  }
+
   void _decodeSessionRpc(
     Map<String, Object?> object,
     Map<String, Object?> data,
@@ -762,7 +811,9 @@ class JsonRpcEncoder {
   Bytes encode(RpcPayload payload) {
     final text = switch (payload.op) {
       RpcOp.hello => _serializeHello(),
+      RpcOp.identify => _serializeSession(payload),
       RpcOp.identified => _serializeIdentified(payload),
+      RpcOp.reidentify => _serializeSession(payload),
       RpcOp.request => _serializeRequest(payload),
       RpcOp.event => _serializeEvent(payload),
       RpcOp.requestBatchResponse => _serializeBatchResponse(payload),
@@ -805,6 +856,15 @@ class JsonRpcEncoder {
       'sid': payload.meta.jsonSid,
       'op': RpcOp.identified.value,
       'd': <String, Object?>{'negotiatedRpcVersion': 1},
+    });
+  }
+
+  String _serializeSession(RpcPayload payload) {
+    final data = _bytesToJson(payload.body);
+    return jsonEncode(<String, Object?>{
+      'sid': payload.meta.jsonSid,
+      'op': payload.op.value,
+      'd': data is Map<String, Object?> ? data : <String, Object?>{},
     });
   }
 
