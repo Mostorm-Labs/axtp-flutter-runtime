@@ -311,6 +311,7 @@ class AxtpClient {
     String paramsJson, {
     CallOptions options = const CallOptions(),
   }) async {
+    print("haha == $methodName");
     final methodId = registry.findMethodId(methodName);
     if (methodId == null) {
       _lastError =
