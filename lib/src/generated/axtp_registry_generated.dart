@@ -189,10 +189,7 @@ enum MethodId {
   softwareResetConfig(0x1703),
   softwareGetUpdatePolicy(0x1704),
   softwareSetUpdatePolicy(0x1705),
-  softwareResetUpdatePolicy(0x1706),
-  sportGetEventDetectionCapabilities(0x1801),
-  sportGetEventDetectionConfig(0x1802),
-  sportSetEventDetectionConfig(0x1803);
+  softwareResetUpdatePolicy(0x1706);
 
   const MethodId(this.value);
 
@@ -243,9 +240,7 @@ enum EventId {
   castBackendChanged(0x160B),
   castFlowControlChanged(0x160C),
   softwareConfigChanged(0x1701),
-  softwareUpdatePolicyChanged(0x1702),
-  sportEventDetectionStateChanged(0x1801),
-  sportEventDetected(0x1802);
+  softwareUpdatePolicyChanged(0x1702);
 
   const EventId(this.value);
 
@@ -454,9 +449,7 @@ enum CapabilityId {
   castFlowControl(0x1606),
   castStatus(0x1607),
   softwareConfig(0x1701),
-  softwareUpdatePolicy(0x1702),
-  sportEventDetection(0x1801),
-  sportBasketball(0x1802);
+  softwareUpdatePolicy(0x1702);
 
   const CapabilityId(this.value);
 
@@ -588,10 +581,7 @@ const kMethodRegistry = <MethodDescriptor>[
   MethodDescriptor(0x1703, "software.resetConfig", "software", "SoftwareResetConfigParams", "SoftwareConfig"),
   MethodDescriptor(0x1704, "software.getUpdatePolicy", "software", "SoftwareGetUpdatePolicyParams", "SoftwareUpdatePolicy"),
   MethodDescriptor(0x1705, "software.setUpdatePolicy", "software", "SoftwareSetUpdatePolicyParams", "SoftwareSetUpdatePolicyResult"),
-  MethodDescriptor(0x1706, "software.resetUpdatePolicy", "software", "SoftwareResetUpdatePolicyParams", "SoftwareUpdatePolicy"),
-  MethodDescriptor(0x1801, "sport.getEventDetectionCapabilities", "sport", "GetEventDetectionCapabilitiesParams", "GetEventDetectionCapabilitiesResult"),
-  MethodDescriptor(0x1802, "sport.getEventDetectionConfig", "sport", "GetEventDetectionConfigParams", "SportEventDetectionState"),
-  MethodDescriptor(0x1803, "sport.setEventDetectionConfig", "sport", "SetEventDetectionConfigParams", "SetEventDetectionConfigResult")
+  MethodDescriptor(0x1706, "software.resetUpdatePolicy", "software", "SoftwareResetUpdatePolicyParams", "SoftwareUpdatePolicy")
 ];
 
 const kEventRegistry = <EventDescriptor>[
@@ -631,9 +621,7 @@ const kEventRegistry = <EventDescriptor>[
   EventDescriptor(0x160B, "cast.backendChanged", "cast", "CastBackendChangedEvent"),
   EventDescriptor(0x160C, "cast.flowControlChanged", "cast", "CastFlowControlChangedEvent"),
   EventDescriptor(0x1701, "software.configChanged", "software", "SoftwareConfigChangedEvent"),
-  EventDescriptor(0x1702, "software.updatePolicyChanged", "software", "SoftwareUpdatePolicyChangedEvent"),
-  EventDescriptor(0x1801, "sport.eventDetectionStateChanged", "sport", "SportEventDetectionStateChangedEvent"),
-  EventDescriptor(0x1802, "sport.eventDetected", "sport", "SportEventDetectedEvent")
+  EventDescriptor(0x1702, "software.updatePolicyChanged", "software", "SoftwareUpdatePolicyChangedEvent")
 ];
 
 const kErrorRegistry = <ErrorDescriptor>[
@@ -820,9 +808,7 @@ const kCapabilityRegistry = <CapabilityDescriptor>[
   CapabilityDescriptor(0x1606, "cast.flowControl", "cast", "object", "CastFlowControlCapability"),
   CapabilityDescriptor(0x1607, "cast.status", "cast", "object", "CastStatusCapability"),
   CapabilityDescriptor(0x1701, "software.config", "software", "object", "SoftwareConfigCapability"),
-  CapabilityDescriptor(0x1702, "software.updatePolicy", "software", "object", "SoftwareUpdatePolicyCapability"),
-  CapabilityDescriptor(0x1801, "sport.eventDetection", "sport", "object", "SportEventDetectionCapabilities"),
-  CapabilityDescriptor(0x1802, "sport.basketball", "sport", "object", "SportBasketballCapability")
+  CapabilityDescriptor(0x1702, "software.updatePolicy", "software", "object", "SoftwareUpdatePolicyCapability")
 ];
 
 class RegistryLookup {
@@ -870,11 +856,6 @@ class MethodRegistryEntry {
 
   final int id;
   final String name;
-  
-  @override
-  String toString() {
-    return "$id $name";
-  }
 }
 
 class MethodRegistry {
@@ -885,7 +866,6 @@ class MethodRegistry {
     for (final method in kMethodRegistry) {
       registry.addMethod(method.id, method.name);
     }
-    print("===>aaaaaaa: ${registry.entries()}");
     return registry;
   }
 

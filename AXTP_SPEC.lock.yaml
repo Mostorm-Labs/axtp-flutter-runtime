@@ -1,7 +1,7 @@
 axtp_spec:
   repository: https://github.com/Mostorm-Labs/axtp
-  tag: spec/v0.14.0
-  version: 0.14.0
-  commit: "5c6ff6a3d3694c86bdcfba042a418ba7fcfc5542"
-  compatibility: ">=0.14.0 <0.15.0"
-  updated_at: "2026-08-07"
+  tag: spec/v0.15.0
+  version: 0.15.0
+  commit: "1bf9e89ede12470e20733d4cea4e50edad989528"
+  compatibility: ">=0.15.0 <0.16.0"
+  updated_at: "2026-08-25"
